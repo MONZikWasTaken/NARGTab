@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ class_name }} Tunniplaan - Edupage Tunniplaani Vaatur</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light theme colors */
+            --primary: #4a6bef;
+            --primary-light: #e0e6ff;
+            --secondary: #38b2ac;
+            --background: #f7fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #1a202c;
+            --text-secondary: #4a5568;
+            --text-light: #718096;
+            --success: #68d391;
+            --error: #fc8181;
+            --warning: #f6e05e;
+            --info: #63b3ed;
+            
+            /* Simple subject colors */
+            --subject-1: #4a6bef;  /* Blue */
+            --subject-2: #38b2ac;  /* Teal */
+            --subject-3: #f6ad55;  /* Orange */
+            --subject-4: #9f7aea;  /* Purple */
+            --subject-5: #68d391;  /* Green */
+            --subject-6: #fc8181;  /* Red */
+            --subject-7: #f6e05e;  /* Yellow */
+            --subject-8: #63b3ed;  /* Light Blue */
+            
+            /* UI variables */
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.2s ease;
+        }
+        
+        /* Dark theme colors */
+        [data-theme="dark"] {
+            --primary: #667eea;
+            --primary-light: #2d3748;
+            --secondary: #319795;
+            --background: #1a202c;
+            --surface: #2d3748;
+            --border: #4a5568;
+            --text: #f7fafc;
+            --text-secondary: #e2e8f0;
+            --text-light: #a0aec0;
+            --success: #38a169;
+            --error: #e53e3e;
+            --warning: #d69e2e;
+            --info: #3182ce;
+            
+            /* Dark theme subject colors - slightly muted */
+            --subject-1: #5a75e0;  /* Blue */
+            --subject-2: #319795;  /* Teal */
+            --subject-3: #ed8936;  /* Orange */
+            --subject-4: #805ad5;  /* Purple */
+            --subject-5: #48bb78;  /* Green */
+            --subject-6: #f56565;  /* Red */
+            --subject-7: #ecc94b;  /* Yellow */
+            --subject-8: #4299e1;  /* Light Blue */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+            background-color: var(--background);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container { 
+            width: 100%;
+            max-width: 1100px; 
+            margin: 0 auto;
+            padding: 10px 0;
+            overflow-x: hidden;
+        }
+
+        .timetable-container {
+            background-color: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            margin-bottom: 40px;
+            padding: 0;
+        }
+
+        /* Timetable base styles */
+        .timetable {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 0;
+        }
+
+        /* Row styling */
+        .timetable tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Cell styling */
+        .timetable th, 
+        .timetable td {
+            padding: 0;
+            margin: 0;
+            border: 1px solid var(--border);
+            vertical-align: top;
+            position: relative;
+        }
+        
+        /* First column width */
+        .timetable tr > th:first-child,
+        .timetable tr > td:first-child {
+            width: 60px;
+            min-width: 60px;
+            max-width: 60px;
+        }
+
+        /* All other columns equal width */
+        .timetable th:not(:first-child),
+        .timetable td:not(:first-child) {
+            width: calc((100% - 60px) / 7); /* Adjust based on number of periods */
+        }
+        
+        /* Day header styling */
+        .timetable th.day-header {
+            width: 60px;
+            height: auto;
+            font-size: 18px;
+            padding: 15px 0;
+            text-align: center;
+            background-color: var(--primary-light);
+            color: var(--text);
+            font-weight: 600;
+            min-width: 60px;
+            vertical-align: middle;
+        }
+
+        .timetable th {
+            background-color: var(--primary-light);
+            font-weight: 600;
+            height: auto;
+            padding: 15px 5px;
+            color: var(--text);
+        }
+
+        /* Normal cell height */
+        .timetable td {
+            height: 120px;
+        }
+
+        .period-header {
+            padding: 10px;
+            font-size: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .period-time {
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 400;
+            margin-top: 5px;
+        }
+
+        /* Subject cell styling */
+        .subject-cell {
+            height: 100%;
+            width: 100%;
+            display: block;
+            padding: 12px;
+            box-sizing: border-box;
+            color: #ffffff; /* White text for all subjects */
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* Shadow for better readability */
+        }
+
+        .subject-name {
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .teacher {
+            font-size: 14px;
+            margin-bottom: 4px;
+            opacity: 0.9;
+        }
+
+        .classroom {
+            font-size: 13px;
+            margin-top: auto;
+            font-weight: 500;
+            padding: 2px 8px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            display: inline-block;
+            margin-right: auto;
+        }
+
+        /* Navigation bar */
+        .navbar {
+            background-color: var(--surface);
+            color: var(--text);
+            padding: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+            width: 100%;
+        }
+
+        .navbar-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 10px;
+            height: 70px;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-inner {
+                padding: 0 15px;
+            }
+            
+            .navbar-brand {
+                margin-left: 0;
+                flex-grow: 1;
+            }
+            
+            .hamburger-menu {
+                display: block;
+            }
+            
+            .hamburger-toggle {
+                display: flex !important;
+                margin-left: 10px;
+            }
+            
+            /* Hide other controls on mobile */
+            .theme-toggle, .class-selector, .share-btn {
+                display: none !important;
+            }
+            
+            /* Hide tab container on mobile */
+            .tab-container {
+                display: none;
+            }
+        }
+
+        .navbar-brand {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            margin-right: 20px;
+        }
+
+        .navbar-logo {
+            height: 24px;
+            margin-right: 12px;
+            fill: var(--primary);
+        }
+
+        .app-title {
+            font-weight: 600;
+            margin-left: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Navbar tabs */
+        .navbar-tabs {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-grow: 1;
+            overflow-x: auto;
+            scrollbar-width: none; /* Hide scrollbar for Firefox */
+            -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+        }
+        
+        .navbar-tabs::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome and Safari */
+        }
+        
+        .nav-tab {
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: var(--transition);
+        }
+        
+        .nav-tab svg {
+            fill: var(--text-secondary);
+        }
+        
+        .nav-tab:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .nav-tab:hover svg {
+            fill: var(--primary);
+        }
+        
+        .nav-tab.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .nav-tab.active svg {
+            fill: var(--primary);
+        }
+        
+        /* Navbar actions (right side) */
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .navbar-item {
+            position: relative;
+        }
+
+        /* Tab content container */
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+            background-color: var(--surface);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Class Selector Dropdown */
+        .class-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .class-selector-btn {
+            background-color: var(--surface);
+            color: var(--text);
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .class-selector-btn:hover {
+            border-color: var(--text-light);
+            box-shadow: var(--shadow-md);
+        }
+
+        .class-selector-icon {
+            margin-right: 8px;
+            fill: var(--primary);
+        }
+
+        .class-selector-btn::after {
+            content: "";
+            display: inline-block;
+            margin-left: 8px;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid var(--text-light);
+            transition: transform 0.2s ease;
+        }
+
+        .class-dropdown {
+            display: none;
+            position: absolute;
+            background-color: var(--surface);
+            min-width: 220px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1;
+            border-radius: var(--radius-md);
+            max-height: 400px;
+            overflow-y: auto;
+            top: calc(100% + 5px);
+            right: 0;
+            border: 1px solid var(--border);
+        }
+
+        .class-dropdown.show {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .class-dropdown-item {
+            color: var(--text-secondary);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .class-dropdown-item:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .class-dropdown-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Share Button */
+        .share-btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            transition: var(--transition);
+            font-weight: 500;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .share-btn:hover {
+            opacity: 0.9;
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+        
+        .share-btn:active {
+            transform: translateY(0px);
+        }
+
+        .share-icon {
+            margin-right: 8px;
+        }
+        
+        /* Theme toggle button */
+        .theme-toggle, .hamburger-toggle {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text);
+        }
+        
+        .theme-toggle {
+            margin-right: 10px;
+        }
+        
+        .theme-toggle:hover, .hamburger-toggle:hover {
+            background-color: var(--primary-light);
+        }
+
+        /* Multiple lesson styling */
+        .multi-lesson {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .multi-lesson::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-style: solid;
+            border-width: 0 30px 30px 0;
+            border-color: transparent rgba(0, 0, 0, 0.2) transparent transparent;
+            z-index: 1;
+        }
+
+        .multi-lesson::after {
+            content: "";
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 6px;
+            height: 6px;
+            background-color: white;
+            border-radius: 50%;
+            z-index: 2;
+            box-shadow: 0 9px 0 white, 0 18px 0 white;
+        }
+        
+        /* Lesson container and switching */
+        .lesson-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .lesson {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            backface-visibility: hidden;
+            display: block;
+        }
+        
+        .lesson.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(10px);
+        }
+        
+        /* Clickable indication */
+        .multi-lesson {
+            cursor: pointer;
+        }
+        
+        .multi-lesson:hover::after {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        /* Current lesson indicator */
+        .lesson-indicator {
+            display: flex;
+            justify-content: center;
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            margin: auto;
+            gap: 5px;
+        }
+        
+        .indicator-dot {
+            width: 6px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .indicator-dot.active {
+            background-color: white;
+            transform: scale(1.2);
+        }
+
+        .empty-cell {
+            background-color: var(--surface);
+            color: var(--text-light);
+            height: 120px;
+            display: table-cell;
+            text-align: center;
+            vertical-align: middle;
+            font-style: italic;
+            font-size: 13px;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+        
+        .empty-cell::after {
+            content: "—";
+            opacity: 0.5;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            background-color: var(--surface);
+            color: var(--text);
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            transform: translateY(-10px);
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast-icon {
+            margin-right: 10px;
+            color: var(--success);
+        }
+
+        /* Special styling for common subjects with consistent colors */
+        .konsultatsioonid { background-color: var(--subject-6) !important; }
+        .kehaline-kasvatus { background-color: var(--subject-5) !important; }
+        .eesti-keel { background-color: var(--subject-3) !important; }
+        .kunst { background-color: var(--subject-7) !important; }
+        .matemaatika { background-color: var(--subject-1) !important; }
+
+        /* Mobile zoom hint */
+        .zoom-hint {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            text-align: center;
+            padding: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            border-radius: var(--radius-md);
+            display: none;
+        }
+
+        /* Menu item info message */
+        .menu-info {
+            padding: 15px;
+            color: var(--text-light);
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* Desktop tabs navigation - visible on larger screens */
+        .desktop-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            background-color: var(--surface);
+            margin-bottom: 15px;
+        }
+        
+        .desktop-tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 13px;
+            color: var(--text-secondary);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .desktop-tab.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .desktop-tab img {
+            max-height: 16px;
+        }
+        
+        .desktop-section {
+            display: none;
+            margin-bottom: 20px;
+        }
+        
+        .desktop-section.active {
+            display: block;
+        }
+        
+        .desktop-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            text-decoration: none;
+            display: block;
+            transition: var(--transition);
+            border-radius: var(--radius-sm);
+            margin-bottom: 4px;
+        }
+        
+        .desktop-item:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+        
+        .desktop-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .desktop-item.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* Hamburger Menu - only visible on mobile */
+        .hamburger-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        
+        .hamburger-menu.open {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .menu-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background-color: var(--surface);
+            box-shadow: var(--shadow-lg);
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 10000;
+        }
+        
+        .hamburger-menu.open .menu-content {
+            transform: translateX(0);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .menu-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--text);
+        }
+        
+        .close-menu {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        
+        .menu-tabs {
+            display: flex;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border);
+            background-color: var(--primary-light);
+        }
+        
+        .menu-tab {
+            padding: 12px 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .menu-tab.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .menu-tab img {
+            max-height: 16px;
+            vertical-align: middle;
+            display: block;
+            margin: 0 auto 5px;
+            filter: brightness(0.8);
+        }
+        
+        [data-theme="dark"] .menu-tab img {
+            filter: brightness(1.5);
+        }
+        
+        .menu-body {
+            padding: 15px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .menu-section {
+            display: none;
+        }
+        
+        .menu-section.active {
+            display: block;
+        }
+        
+        .menu-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.2s;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .hamburger-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+        }
+        
+        .hamburger-toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .timetable-container {
+                overflow-x: auto;
+            }
+            
+            .timetable {
+                width: 1100px;
+            }
+            
+            .zoom-hint {
+                display: block;
+            }
+            
+            /* Hide desktop tabs on smaller screens */
+            .desktop-tabs, .desktop-section {
+                display: none !important;
+            }
+        }
+
+        /* CSS for multi-period lessons */
+        .multi-period-lesson {
+            background-color: inherit;
+            position: relative;
+        }
+
+        .multi-period-lesson .subject-cell {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Loading animation */
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
+            height: 150px;
+            padding: 20px;
+        }
+
+        .loader-cube {
+            width: 35px;
+            height: 35px;
+            margin: 12px;
+            background-color: var(--primary);
+            border-radius: var(--radius-sm);
+            animation: cube-rotate 2s infinite ease-in-out;
+            transform-style: preserve-3d;
+            perspective: 600px;
+            opacity: 0.9;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .loader-cube:nth-child(1) {
+            animation-delay: 0s;
+            animation-duration: 1.8s;
+            background-color: var(--subject-1);
+        }
+
+        .loader-cube:nth-child(2) {
+            animation-delay: 0.2s;
+            animation-duration: 2s;
+            background-color: var(--subject-3);
+        }
+
+        .loader-cube:nth-child(3) {
+            animation-delay: 0.4s;
+            animation-duration: 2.2s;
+            background-color: var(--subject-5);
+        }
+
+        .loader-cube:nth-child(4) {
+            animation-delay: 0.6s;
+            animation-duration: 1.9s;
+            background-color: var(--subject-7);
+        }
+
+        @keyframes cube-rotate {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+            20% {
+                transform: rotateX(90deg) rotateY(45deg) rotateZ(60deg);
+            }
+            40% {
+                transform: rotateX(180deg) rotateY(90deg) rotateZ(120deg);
+            }
+            60% {
+                transform: rotateX(270deg) rotateY(135deg) rotateZ(180deg);
+            }
+            80% {
+                transform: rotateX(360deg) rotateY(180deg) rotateZ(240deg);
+            }
+            100% {
+                transform: rotateX(0deg) rotateY(360deg) rotateZ(360deg);
+            }
+        }
+
+        /* Developer information section */
+        .developer-section {
+            background-color: var(--surface);
+            color: var(--text);
+            margin-top: 40px;
+            margin-bottom: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        [data-theme="dark"] .developer-section {
+            background-color: #2d3748;
+            color: white;
+        }
+
+        .dev-info-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .dev-header h3 {
+            font-size: 24px;
+            color: var(--primary);
+            margin: 0;
+            margin-bottom: 20px;
+        }
+
+        .dev-info-container p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .dev-info-list {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        .dev-info-list li {
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        .dev-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+            background-color: var(--surface);
+        }
+
+        [data-theme="dark"] .dev-link {
+            border: 1px solid #4a5568;
+            background-color: #2d3748;
+            color: #667eea;
+        }
+
+        .dev-link:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        [data-theme="dark"] .dev-link:hover {
+            background-color: #4a5568;
+        }
+
+        .dev-link svg {
+            fill: var(--primary);
+        }
+
+        [data-theme="dark"] .dev-link svg {
+            fill: #667eea;
+        }
+
+        .okak-badge {
+            float: right;
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin-left: 20px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #4a5568;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #2d3748;
+        }
+
+        .dev-content {
+            clear: none;
+        }
+
+        .dev-info-container p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        .dev-info-list {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        .dev-info-list li {
+            margin-bottom: 15px;
+            color: #e2e8f0;
+        }
+
+        .dev-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .dev-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid #4a5568;
+            transition: all 0.2s ease;
+            background-color: #2d3748;
+        }
+
+        .dev-link:hover {
+            background-color: #4a5568;
+            transform: translateY(-2px);
+        }
+
+        .dev-link svg {
+            fill: #667eea;
+        }
+
+        .badge-text {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            color: white;
+            text-align: center;
+            padding: 5px 0;
+            font-weight: bold;
+            font-size: 18px;
+            z-index: 2;
+        }
+
+        .badge-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .developer-section {
+                padding: 20px;
+                margin-top: 20px;
+            }
+            
+            .dev-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .okak-badge {
+                margin-left: 0;
+                margin-top: 15px;
+                align-self: center;
+            }
+            
+            .dev-header h3 {
+                font-size: 20px;
+            }
+            
+            .dev-links {
+                flex-direction: column;
+            }
+        }
+
+        .telegram-link {
+            color: #0088cc;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .telegram-link:hover {
+            color: #62c1f0;
+            text-decoration: underline;
+        }
+
+        .telegram-link::before {
+            content: "";
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230088cc'%3E%3Cpath d='M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.247l-1.932 9.128c-.146.658-.537.818-1.088.508l-3.004-2.212-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.054 5.55-5.022c.242-.213-.054-.333-.373-.121l-6.869 4.326-2.95-.924c-.642-.204-.654-.642.135-.953l11.566-4.448c.538-.196 1.006.128.804 1.083z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        /* Mobile Theme Toggle */
+        .theme-toggle-container {
+            padding: 15px;
+        }
+
+        .theme-toggle-mobile {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 10px 15px;
+            width: 100%;
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: var(--radius-md);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle-mobile:hover {
+            background-color: #4a5568;
+        }
+
+        .theme-icon {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        .dark-icon {
+            display: none;
+        }
+
+        .light-icon {
+            display: inline-block;
+        }
+
+        [data-theme="dark"] .dark-icon {
+            display: inline-block;
+        }
+
+        [data-theme="dark"] .light-icon {
+            display: none;
+        }
+
+        .theme-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .menu-item-header {
+            padding: 10px 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dev-header {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .dev-content {
+            clear: none;
+        }
+
+        /* Menu actions */
+        .menu-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .menu-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background-color: var(--surface);
+            color: var(--text);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .menu-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-btn {
+            color: var(--text);
+        }
+
+        .share-btn-mobile {
+            color: white;
+            background-color: var(--primary);
+        }
+
+        .share-btn-mobile svg {
+            fill: white;
+        }
+
+        .share-btn-mobile:hover {
+            background-color: #4c5dea;
+        }
+
+        .action-label {
+            font-weight: 500;
+        }
+
+        .theme-btn:hover {
+            background-color: var(--primary-light);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <a href="https://narg.ee/" class="navbar-brand">
+                <svg class="navbar-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
+                </svg>
+                <span class="app-title">Narva Gümnaasium</span>
+            </a>
+
+            <!-- Tabs in navbar -->
+            <div class="navbar-tabs">
+                <div class="nav-tab active" data-tab="classes">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16" fill="currentColor">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    <span>Klassid</span>
+                </div>
+            </div>
+
+            <div class="navbar-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <div class="navbar-item">
+                    <div class="class-selector">
+                        <button class="class-selector-btn" id="classDropdownBtn">
+                            <svg class="class-selector-icon" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16">
+                                <path d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                            {{ class_name }}
+                        </button>
+                        <div class="class-dropdown" id="classDropdown">
+                        </div>
+                    </div>
+                </div>
+                <div class="navbar-item">
+                    <button class="share-btn" id="shareBtn">
+                        <svg class="share-icon" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16" fill="white">
+                            <path d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                        </svg>
+                        Jaga
+                    </button>
+                </div>
+                <button class="hamburger-toggle" id="menuToggle" onclick="document.getElementById('hamburgerMenu').classList.add('open'); loadMenuClasses();">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast">
+        <svg class="toast-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        Link kopeeritud lõikelauale!
+    </div>
+
+    <div class="container">
+        <div class="zoom-hint">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 5px;">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="11" y1="8" x2="11" y2="14"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+            Suurendamiseks/vähendamiseks pigistage
+        </div>
+        
+        <div class="timetable-container">
+            <table class="timetable">
+                <thead>
+                    <tr>
+                        <th></th>
+                        {% for period in periods %}
+                        <th class="period-header">
+                            {{ period.name }}
+                            <div class="period-time">{{ period.starttime }}-{{ period.endtime }}</div>
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for day in timetable %}
+                    <tr>
+                        <th class="day-header">{{ day.day }}</th>
+                        {% for period_cell in day.periods %}
+                            {% if period_cell.is_placeholder %}
+                                <!-- Skip rendering placeholder cells (handled by colspan) -->
+                            {% elif period_cell.has_lessons and period_cell.is_multi_period %}
+                                <td class="lesson-cell multi-period-lesson" 
+                                    colspan="{{ period_cell.period_span }}" 
+                                    data-lesson-count="{{ period_cell.count }}">
+                                    <div class="lesson-container">
+                                        {% for lesson in period_cell.lessons %}
+                                        <div class="lesson {% if not loop.first %}hidden{% endif %}" data-index="{{ loop.index0 }}">
+                                            <div class="subject-cell {{ lesson.css_class }}" style="background-color: {{ lesson.color }}; color: {% if lesson.color in ['#000000', '#111111', '#222222', '#333333', '#444444', '#555555', '#666666', '#777777', '#0000FF', '#000080', '#800000', '#008000', '#4299e1', '#48bb78', '#f56565'] %}white{% else %}black{% endif %};">
+                                                <div class="subject-name">{{ lesson.subject_short }}</div>
+                                                {% if lesson.teacher %}
+                                                <div class="teacher">{{ lesson.teacher }}</div>
+                                                {% endif %}
+                                                {% if lesson.classroom %}
+                                                <div class="classroom">{{ lesson.classroom }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        
+                                        {% if period_cell.count > 1 %}
+                                        <div class="lesson-indicator">
+                                            {% for i in range(period_cell.count) %}
+                                            <div class="indicator-dot {% if i == 0 %}active{% endif %}"></div>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            {% elif period_cell.has_lessons %}
+                                <td class="lesson-cell {% if period_cell.count > 1 %}multi-lesson{% endif %}" 
+                                    data-lesson-count="{{ period_cell.count }}">
+                                    <div class="lesson-container">
+                                        {% for lesson in period_cell.lessons %}
+                                        <div class="lesson {% if not loop.first %}hidden{% endif %}" data-index="{{ loop.index0 }}">
+                                            <div class="subject-cell {{ lesson.css_class }}" style="background-color: {{ lesson.color }}; color: {% if lesson.color in ['#000000', '#111111', '#222222', '#333333', '#444444', '#555555', '#666666', '#777777', '#0000FF', '#000080', '#800000', '#008000', '#4299e1', '#48bb78', '#f56565'] %}white{% else %}black{% endif %};">
+                                                <div class="subject-name">{{ lesson.subject_short }}</div>
+                                                {% if lesson.teacher %}
+                                                <div class="teacher">{{ lesson.teacher }}</div>
+                                                {% endif %}
+                                                {% if lesson.classroom %}
+                                                <div class="classroom">{{ lesson.classroom }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        
+                                        {% if period_cell.count > 1 %}
+                                        <div class="lesson-indicator">
+                                            {% for i in range(period_cell.count) %}
+                                            <div class="indicator-dot {% if i == 0 %}active{% endif %}"></div>
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            {% else %}
+                                <td class="empty-cell"></td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Tab content container -->
+    <div class="container tab-container">
+        <!-- <div class="tab-content active" id="classes-content">
+            <div id="desktop-classes-section">
+                <div class="loader-container" id="classes-loader" style="display: none;">
+                    <div class="loader-cube"></div>
+                    <div class="loader-cube"></div>
+                    <div class="loader-cube"></div>
+                    <div class="loader-cube"></div>
+                </div>
+            </div>
+        </div> -->
+        <div class="tab-content" id="teachers-content">
+            <div class="menu-info">Teachers view not yet implemented</div>
+        </div>
+        <div class="tab-content" id="classrooms-content">
+            <div class="menu-info">Classrooms view not yet implemented</div>
+        </div>
+        <div class="tab-content" id="subjects-content">
+            <div class="menu-info">Subjects view not yet implemented</div>
+        </div>
+    </div>
+    
+    <!-- Hamburger Menu -->
+    <div class="hamburger-menu" id="hamburgerMenu">
+        <div class="menu-content">
+            <div class="menu-header">
+                <div class="menu-title">Tunniplaani valikud</div>
+                <button class="close-menu" id="closeMenu" onclick="document.getElementById('hamburgerMenu').classList.remove('open');">&times;</button>
+            </div>
+            
+            <div class="menu-actions">
+                <button class="menu-action-btn theme-btn" id="mobileThemeToggle">
+                    <span class="theme-icon light-icon">☀️</span>
+                    <span class="theme-icon dark-icon">🌙</span>
+                    <span class="action-label">Lülita teema</span>
+                </button>
+                
+                <button class="menu-action-btn share-btn-mobile" id="shareBtnMobile">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 24 24" width="18" fill="currentColor">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    <span class="action-label">Jaga tunniplaani</span>
+                </button>
+            </div>
+            
+            <div class="menu-tabs">
+                <div class="menu-tab active" data-tab="classes">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTEyIDEyYzIuMjEgMCA0LTEuNzkgNC00cy0xLjc5LTQtNC00LTQgMS43OS00IDQgMS43OSA0IDQgNHptMCAyYy0yLjY3IDAtOCAxLjM0LTggNHYyaDE2di0yYzAtMi42Ni01LjMzLTQtOC00eiIgZmlsbD0iIzMzMzMzMyIvPjwvc3ZnPg==">
+                    Klassid
+                </div>
+                <div class="menu-tab" data-tab="teachers">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTIwIDZoLTRWNGMwLTEuMS0uOS0yLTItMmgtNGMtMS4xIDAtMiAuOS0yIDJ2Mmg0djJoLTRjLTEuMSAwLTIgLjktMiAydjhoMTZWOGMwLTEuMS0uOS0yLTItMnptLTYgMGgtNFY0aDR2MnpNNCAxMGgzdjJINHYtMnptOCAwdjJoMnYtMmgtMnpNMTIgMkM3LjAzIDIgMyA2LjAzIDMgMTFjMCAzLjE4IDIuNDUgNi45MiA3LjAxIDExLjUuOTUuODQgMi40Ljg1IDMuMzYgMEMxOC41MyAxNy45MSAyMSAxNC4xOSAyMSAxMWMwLTQuOTctNC4wMy05LTktOXptMCAxOGMtLjgzLS41OC04LTUuNzEtOC0xMSAwLTQuNDIgMy41OC04IDgtOHM4IDMuNTggOCA4YzAgNS4yOS03LjE3IDEwLjQyLTggMTF6IiBmaWxsPSIjMzMzMzMzIi8+PC9zdmc+">
+                    Õpetajad
+                </div>
+                <div class="menu-tab" data-tab="classrooms">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTEwIDIwdjJoNHYtMmgtNHptLTItMUg4djJoMnYtMnptOCAwdjJoMnYtMmgtMnpNMTIgMkM3LjAzIDIgMyA2LjAzIDMgMTFjMCAzLjE4IDIuNDUgNi45MiA3LjAxIDExLjUuOTUuODQgMi40Ljg1IDMuMzYgMEMxOC41MyAxNy45MSAyMSAxNC4xOSAyMSAxMWMwLTQuOTctNC4wMy05LTktOXptMCAxOGMtLjgzLS41OC04LTUuNzEtOC0xMSAwLTQuNDIgMy41OC04IDgtOHM4IDMuNTggOCA4YzAgNS4yOS03LjE3IDEwLjQyLTggMTF6IiBmaWxsPSIjMzMzMzMzIi8+PC9zdmc+">
+                    Ruumid
+                </div>
+                <div class="menu-tab" data-tab="subjects">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE4IDJoLTZjLTEuMSAwLTIgLjktMiAydjE2YzAgMS4xLjkgMiAyIDJoMTJjMS4xIDAgMi0uOSAyLTJWOGwtNi02ek0xMiAydjE2SDZjLTEuMSAwLTIgLjktMiAyVjRjMC0xLjEuOS0yIDItMmg2em02IDEwdjJoLThWMTJoOHptMCA0djJoLTh2LTJoOHptLTgtNnYtMmg4djJoLTh6IiBmaWxsPSIjMzMzMzMzIi8+PC9zdmc+">
+                    Ained
+                </div>
+            </div>
+            
+            <div class="menu-body">
+                <div class="menu-section active" id="classes-section">
+                    <div class="menu-item-header">Klassid</div>
+                    <!-- Loading animation -->
+                    <div class="loader-container" id="menu-classes-loader" style="display: none;">
+                        <div class="loader-cube"></div>
+                        <div class="loader-cube"></div>
+                        <div class="loader-cube"></div>
+                        <div class="loader-cube"></div>
+                    </div>
+                    <!-- Classes will be loaded via JavaScript -->
+                </div>
+                <div class="menu-section" id="teachers-section">
+                    <div class="menu-info">Õpetajate vaade pole veel rakendatud</div>
+                </div>
+                <div class="menu-section" id="classrooms-section">
+                    <div class="menu-info">Ruumide vaade pole veel rakendatud</div>
+                </div>
+                <div class="menu-section" id="subjects-section">
+                    <div class="menu-info">Ainete vaade pole veel rakendatud</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Developer Information Section -->
+    <div class="container developer-section">
+        <div class="dev-info-container">
+            <div class="dev-header">
+                <h3>Arendaja teave</h3>
+            </div>
+            
+            <div class="okak-badge">
+                <div class="badge-text">о как</div>
+                <img src="/static/images/okak.png" alt="о как" class="badge-image">
+            </div>
+            
+            <div class="dev-content">
+                <p>See sait loodi kiiresti ühe õhtuga ja pole veel täielikult välja töötatud. Ma ei mõistnud täielikult ametliku veebisaidi API-d, seega on mõned piirangud:</p>
+                
+                <ul class="dev-info-list">
+                    <li>Pikad tunnid võivad olla valesti kuvatud - algusaeg on õige, kuid lõpuaeg võib olla vale</li>
+                    <li>Praegu on saadaval ainult klasside tunniplaani vaade, ilma õpetajate, ruumide või ainete toeta</li>
+                    <li>Teised vaated pole veel rakendatud</li>
+                    <li>Tunniplaani andmeid värskendatakse automaatselt iga minuti järel</li>
+                </ul>
+                
+                <p>Projekti arendamine oli lõbus, loodan et see on kasulik vaatamata piirangutele!</p>
+                
+                <p>Kui teil on küsimusi või soove, võite mulle kirjutada Telegramis: <a href="https://t.me/MONZikxD" target="_blank" class="telegram-link">@MONZikxD</a></p>
+                
+                <div class="dev-links">
+                    <a href="https://github.com/MONZikWasTaken" target="_blank" class="dev-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        Minu GitHub
+                    </a>
+                    <a href="https://github.com/MONZikWasTaken/NARGTab" target="_blank" class="dev-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        Projekti repositoorium
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+            const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+            
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+            } else if (savedTheme === 'light') {
+                document.body.removeAttribute('data-theme');
+            } else if (prefersDarkScheme.matches) {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+            
+            themeToggle.addEventListener('click', function() {
+                toggleTheme();
+            });
+            
+            if (mobileThemeToggle) {
+                mobileThemeToggle.addEventListener('click', function() {
+                    toggleTheme();
+                });
+            }
+            
+            function toggleTheme() {
+                if (document.body.getAttribute('data-theme') === 'dark') {
+                    document.body.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.body.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            }
+            
+            setInterval(function() {
+                const currentPath = window.location.pathname;
+                const currentClassId = currentPath.split('/').pop();
+                
+                fetch(`/api/timetable/${currentClassId}?refresh=true`)
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Timetable data refreshed');
+                            location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing timetable data:', error);
+                    });
+            }, 60000);
+            
+            const navTabs = document.querySelectorAll('.nav-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    const tabName = this.getAttribute('data-tab');
+                    document.getElementById(tabName + '-content').classList.add('active');
+                    
+                    if (tabName === 'classes') {
+                        loadClassesContent();
+                    }
+                });
+            });
+            
+            function loadClassesContent() {
+                const classesSection = document.getElementById('desktop-classes-section');
+                if (classesSection && classesSection.children.length === 0) {
+                    console.log('Loading desktop classes...');
+                    
+                    const loaderContainer = document.createElement('div');
+                    loaderContainer.className = 'loader-container';
+                    loaderContainer.id = 'desktop-loader';
+                    
+                    for (let i = 0; i < 4; i++) {
+                        const cube = document.createElement('div');
+                        cube.className = 'loader-cube';
+                        loaderContainer.appendChild(cube);
+                    }
+                    
+                    classesSection.appendChild(loaderContainer);
+                    
+                    const loadingTimeout = setTimeout(() => {
+                        console.log('Desktop loading timeout reached, showing fallback data');
+                        
+                        const loader = document.getElementById('desktop-loader');
+                        if (loader) {
+                            loader.remove();
+                        }
+                        
+                        showFallbackClasses(classesSection, 'desktop-item');
+                    }, 5000);
+                    
+                    fetch('/api/classes')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok: ' + response.statusText);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            clearTimeout(loadingTimeout);
+                            
+                            console.log('Desktop classes loaded successfully:', data);
+                            
+                            const currentPath = window.location.pathname;
+                            const currentClassId = currentPath.split('/').pop();
+                            
+                            const loader = document.getElementById('desktop-loader');
+                            if (loader) {
+                                loader.remove();
+                            }
+                            
+                            if (Array.isArray(data) && data.length > 0) {
+                                data.forEach(classItem => {
+                                    const classLink = document.createElement('a');
+                                    classLink.href = `/timetable/${classItem.id}`;
+                                    classLink.className = 'desktop-item';
+                                    classLink.textContent = classItem.name;
+                                    
+                                    if (classItem.id === currentClassId) {
+                                        classLink.classList.add('active');
+                                    }
+                                    
+                                    classesSection.appendChild(classLink);
+                                });
+                            } else {
+                                showFallbackClasses(classesSection, 'desktop-item');
+                            }
+                        })
+                        .catch(error => {
+                            clearTimeout(loadingTimeout);
+                            
+                            console.error('Error fetching classes for desktop view:', error);
+                            
+                            const loader = document.getElementById('desktop-loader');
+                            if (loader) {
+                                loader.remove();
+                            }
+                            
+                            showFallbackClasses(classesSection, 'desktop-item');
+                        });
+                }
+            }
+            
+            function showFallbackClasses(container, className = 'menu-item') {
+                const fallbackClasses = [
+                    {id: 'G1-6', name: 'G1-6 (Valitsus)'},
+                    {id: 'G2-6', name: 'G2-6'},
+                    {id: 'G3-6', name: 'G3-6'},
+                    {id: 'G1-7', name: 'G1-7'},
+                    {id: 'G2-7', name: 'G2-7'},
+                    {id: 'G3-7', name: 'G3-7'}
+                ];
+                
+                const currentPath = window.location.pathname;
+                const currentClassId = currentPath.split('/').pop();
+                
+                fallbackClasses.forEach(classItem => {
+                    const classLink = document.createElement('a');
+                    classLink.href = `/timetable/${classItem.id}`;
+                    classLink.className = className;
+                    classLink.textContent = classItem.name;
+                    
+                    if (classItem.id === currentClassId) {
+                        classLink.classList.add('active');
+                    }
+                    
+                    container.appendChild(classLink);
+                });
+            }
+            
+            loadClassesContent();
+            
+            setTimeout(function() {
+                loadMenuClasses();
+            }, 1000);
+            
+            const multiLessonCells = document.querySelectorAll('.multi-lesson');
+            
+            multiLessonCells.forEach(cell => {
+                const count = parseInt(cell.dataset.lessonCount);
+                
+                cell.addEventListener('click', function() {
+                    const lessons = this.querySelectorAll('.lesson');
+                    const dots = this.querySelectorAll('.indicator-dot');
+                    let visibleIndex = -1;
+                    
+                    for (let i = 0; i < lessons.length; i++) {
+                        if (!lessons[i].classList.contains('hidden')) {
+                            visibleIndex = i;
+                            break;
+                        }
+                    }
+                    
+                    if (visibleIndex !== -1) {
+                        lessons[visibleIndex].classList.add('hidden');
+                        dots[visibleIndex].classList.remove('active');
+                    }
+                    
+                    const nextIndex = (visibleIndex + 1) % lessons.length;
+                    lessons[nextIndex].classList.remove('hidden');
+                    dots[nextIndex].classList.add('active');
+                });
+            });
+
+            const classDropdownBtn = document.getElementById('classDropdownBtn');
+            const classDropdown = document.getElementById('classDropdown');
+            
+            if (classDropdownBtn) {
+                classDropdownBtn.addEventListener('click', function() {
+                    classDropdown.classList.toggle('show');
+                    
+                    if (classDropdown.classList.contains('show') && classDropdown.children.length === 0) {
+                        fetchClasses();
+                    }
+                });
+            }
+            
+            window.addEventListener('click', function(event) {
+                if (!event.target.matches('.class-selector-btn') && 
+                    !event.target.closest('.class-selector-btn') &&
+                    !event.target.matches('.class-dropdown') && 
+                    !event.target.closest('.class-dropdown')) {
+                    
+                    if (classDropdown.classList.contains('show')) {
+                        classDropdown.classList.remove('show');
+                    }
+                }
+            });
+            
+            function fetchClasses() {
+                fetch('/api/classes')
+                    .then(response => response.json())
+                    .then(data => {
+                        const currentPath = window.location.pathname;
+                        const currentClassId = currentPath.split('/').pop();
+                        
+                        classDropdown.innerHTML = '';
+                        
+                        data.forEach(classItem => {
+                            const classLink = document.createElement('a');
+                            classLink.href = `/timetable/${classItem.id}`;
+                            classLink.className = 'class-dropdown-item';
+                            classLink.textContent = classItem.name;
+                            
+                            if (classItem.id === currentClassId) {
+                                classLink.classList.add('active');
+                            }
+                            
+                            classDropdown.appendChild(classLink);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching classes:', error);
+                        classDropdown.innerHTML = '<div class="class-dropdown-item">Failed to load classes</div>';
+                    });
+            }
+            
+            const shareBtn = document.getElementById('shareBtn');
+            const shareBtnMobile = document.getElementById('shareBtnMobile');
+            const toast = document.getElementById('toast');
+            
+            function shareCurrentPage() {
+                const url = window.location.href;
+                
+                navigator.clipboard.writeText(url).then(function() {
+                    toast.classList.add('show');
+                    
+                    setTimeout(function() {
+                        toast.classList.remove('show');
+                    }, 3000);
+                }).catch(function(err) {
+                    console.error('Could not copy text: ', err);
+                });
+            }
+            
+            if (shareBtn) {
+                shareBtn.addEventListener('click', shareCurrentPage);
+            }
+            
+            if (shareBtnMobile) {
+                shareBtnMobile.addEventListener('click', function() {
+                    shareCurrentPage();
+                    document.getElementById('hamburgerMenu').classList.remove('open');
+                });
+            }
+            
+            const menuToggle = document.getElementById('menuToggle');
+            const closeMenu = document.getElementById('closeMenu');
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const menuTabs = document.querySelectorAll('.menu-tab');
+            const menuSections = document.querySelectorAll('.menu-section');
+            const classesSection = document.getElementById('classes-section');
+            
+            console.log('Hamburger menu elements:', { menuToggle, closeMenu, hamburgerMenu });
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                    console.log('Menu toggle clicked');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    hamburgerMenu.classList.add('open');
+                    
+                    if (classesSection && classesSection.children.length === 0) {
+                        loadMenuClasses();
+                    }
+                });
+            } else {
+                console.error('Menu toggle button not found!');
+            }
+            
+            if (closeMenu) {
+                closeMenu.addEventListener('click', function() {
+                    hamburgerMenu.classList.remove('open');
+                });
+            }
+            
+            hamburgerMenu.addEventListener('click', function(event) {
+                if (event.target === hamburgerMenu) {
+                    hamburgerMenu.classList.remove('open');
+                }
+            });
+            
+            menuTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    menuTabs.forEach(t => t.classList.remove('active'));
+                    menuSections.forEach(s => s.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    const tabName = this.getAttribute('data-tab');
+                    document.getElementById(tabName + '-section').classList.add('active');
+                    
+                    if (tabName === 'classes' && classesSection && classesSection.children.length === 0) {
+                        loadMenuClasses();
+                    }
+                });
+            });
+            
+            function loadMenuClasses() {
+                const classesSection = document.getElementById('classes-section');
+                const classesLoader = document.getElementById('menu-classes-loader');
+                
+                if (!classesSection) return;
+                
+                if (classesLoader) {
+                    classesLoader.style.display = 'flex';
+                    console.log('Showing menu loader');
+                } else {
+                    console.error('Menu loader not found!');
+                }
+                
+                const existingItems = classesSection.querySelectorAll('.menu-item');
+                existingItems.forEach(item => item.remove());
+                
+                const existingErrors = classesSection.querySelectorAll('.menu-info');
+                existingErrors.forEach(item => item.remove());
+                
+                console.log('Loading classes for menu...');
+                
+                const loadingTimeout = setTimeout(() => {
+                    console.log('Loading timeout reached, showing fallback data');
+                    
+                    if (classesLoader) {
+                        classesLoader.style.display = 'none';
+                    }
+                    
+                    showFallbackClasses(classesSection);
+                }, 5000);
+                
+                fetch('/api/classes')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        clearTimeout(loadingTimeout);
+                        
+                        console.log('Classes loaded successfully:', data);
+                        
+                        const currentPath = window.location.pathname;
+                        const currentClassId = currentPath.split('/').pop();
+                        
+                        if (classesLoader) {
+                            classesLoader.style.display = 'none';
+                        }
+                        
+                        if (Array.isArray(data) && data.length > 0) {
+                            data.forEach(classItem => {
+                                const classLink = document.createElement('a');
+                                classLink.href = `/timetable/${classItem.id}`;
+                                classLink.className = 'menu-item';
+                                classLink.textContent = classItem.name;
+                                
+                                if (classItem.id === currentClassId) {
+                                    classLink.classList.add('active');
+                                }
+                                
+                                classesSection.appendChild(classLink);
+                            });
+                        } else {
+                            showFallbackClasses(classesSection);
+                        }
+                    })
+                    .catch(error => {
+                        clearTimeout(loadingTimeout);
+                        
+                        console.error('Error fetching classes for menu:', error);
+                        
+                        if (classesLoader) {
+                            classesLoader.style.display = 'none';
+                        }
+                        
+                        showFallbackClasses(classesSection);
+                    });
+            }
+        });
+    </script>
+</body>
+</html> 
