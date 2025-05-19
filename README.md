@@ -41,7 +41,7 @@
 
 1. Клонировать репозиторий:
 ```bash
-git clone https://github.com/yourname/nargtab.git
+git clone https://github.com/MONZikWasTaken/NARGTab.git
 cd nargtab
 ```
 
@@ -77,7 +77,7 @@ http://localhost:5000
 Если у вас есть вопросы, предложения или вы заметили ошибку, вы можете связаться со мной:
 
 - **Телеграм**: [@MONZikxD](https://t.me/MONZikxD)
-- **GitHub**: [yourname](https://github.com/yourname)
+- **GitHub**: [MONZikWasTaken](https://github.com/MONZikWasTaken)
 
 ## 📄 Лицензия
 
